@@ -20,9 +20,25 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/users", (request, response) => {
-    response.send(mockUsers);
+    const {
+        query: {filter, value}
+    } = request;
+
+    if(!filter || !value){
+        return response.send(mockUsers);
+    }
+    const userKeys = Object.keys(mockUsers[0]);
+    if (!userKeys.includes(filter)) {
+        return response.status(404).send('Invalid filter parameter passed.');
+    }
+    response.send(
+        mockUsers.filter(
+            (user) => user[filter].includes(value)));
+    
 });
 
+
+//route parameters
 app.get("/api/users/:id", (request, response) => {
     const parsedId = parseInt(request.params.id);
     if(isNaN(parsedId)){
@@ -41,3 +57,4 @@ app.get("/api/products", (request, response) => {
         {id: 3, name: "demo3", price: 0.9},
     ]);
 });
+
