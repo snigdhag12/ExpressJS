@@ -1,4 +1,4 @@
-import express, { response } from 'express';
+import express, { request, response } from 'express';
 
 const app = express();
 
@@ -104,5 +104,36 @@ app.put("/api/users/:id", (request, response) => {
     if(findUserIndex === -1) return response.sendStatus(404);
 
     mockUsers[findUserIndex] = { id: parsedId, ...body};
+    return response.sendStatus(200);
+});
+
+app.patch('/api/users/:id', (request, response) => {
+    const {
+        body,
+        params : { id },
+    } = request;
+
+    const parsedId = parseInt(id);
+    if(isNaN(parsedId)) return response.sendStatus(400);
+    const findUserIndex = mockUsers.findIndex(
+        (user) => user.id == parsedId
+    )
+    if(findUserIndex === -1) return response.sendStatus(404);
+    mockUsers[findUserIndex] = { ...mockUsers[findUserIndex] , ...body}; //...body this will override the previous value
+    return response.sendStatus(200);
+});
+
+app.delete("/api/users/:id", (request, response) => {
+    const {
+        params: {id}
+    } = request;
+
+    const parsedId = parseInt(id);
+    if(isNaN(parsedId)) return response.status(400);
+    const findUserIndex = mockUsers.findIndex(
+        (user) => user.id == parsedId
+    )
+    if(findUserIndex === -1) return response.sendStatus(404);
+    mockUsers.splice(findUserIndex, 1);
     return response.sendStatus(200);
 });
