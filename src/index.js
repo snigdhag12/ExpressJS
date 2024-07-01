@@ -1,6 +1,10 @@
-import express from 'express';
+import express, { response } from 'express';
 
 const app = express();
+
+//registering the middleware to handle parse json 
+app.use(express.json());
+
 const PORT = process.env.PORT || 3000; //pick port from environment variables else if not defined go with default
 
 const mockUsers = [
@@ -8,6 +12,16 @@ const mockUsers = [
     {id: 2, username: "demo2", displayName: "DEMO2"},
     {id: 3, username: "demo3", displayName: "DEMO3"},
 ];
+
+const validateUser = (body) => {
+    const { username, displayName } = body;
+
+    if (!username || typeof username !== 'string' || !displayName || typeof displayName !== 'string') {
+        return false;
+    }
+
+    return true;
+};
 
 //starts server at specific port
 app.listen(PORT, () => {
@@ -37,6 +51,18 @@ app.get("/api/users", (request, response) => {
     
 });
 
+//POST REQUEST to create user
+app.post('/api/users', (request, response) => {
+
+    if(!validateUser(request.body)) {
+        return response.status(400).send({ msg: 'Invalid request body. Username and displayName are required and should be strings.' });
+    }
+
+    const newUser = { id: mockUsers[mockUsers.length-1] + 1, ...body};
+    mockUsers.push(newUser);
+    return response.status(201).send(newUser);
+})
+
 
 //route parameters
 app.get("/api/users/:id", (request, response) => {
@@ -58,3 +84,25 @@ app.get("/api/products", (request, response) => {
     ]);
 });
 
+app.put("/api/users/:id", (request, response) => {
+    const {
+        body,
+        params : { id },
+    } = request;
+
+    if(!validateUser(request.body)) {
+        return response.status(400).send({ msg: 'Invalid request body. Username and displayName are required and should be strings.' });
+    }
+
+    const parsedId = parseInt(id);
+    if(isNaN(parsedId)) return response.sendStatus(400);
+
+    const findUserIndex = mockUsers.findIndex(
+        (user) => user.id == parsedId
+    )
+
+    if(findUserIndex === -1) return response.sendStatus(404);
+
+    mockUsers[findUserIndex] = { id: parsedId, ...body};
+    return response.sendStatus(200);
+});
