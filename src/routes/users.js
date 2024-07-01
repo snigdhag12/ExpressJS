@@ -8,6 +8,14 @@ const router = Router();
 
 
 router.get('/api/users',  query('filter').isString().isLength({min: 3, max: 10}).withMessage('Character length invalid'), (request, response) => {
+    console.log(request.session.id);
+    request.sessionStore.get(request.session.id, (err, sessionData) => {
+        if(err) {
+            console.log(err);
+            throw err;
+        }
+        console.log(sessionData);
+    })
     const result = validationResult(request);
     const {
         query: {filter, value}

@@ -1,11 +1,24 @@
-import express from 'express';
+import express, { request, response } from 'express';
 import routes from './routes/index.js'
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import { mockUsers } from './utils/constants.js';
 
 const app = express();
 
 //registering the middleware to handle parse json 
 app.use(express.json());
 
+app.use(cookieParser());
+
+app.use(session({
+    secret: 'simple cookie',
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        maxAge: 60000 * 60,
+    }
+}));
 
 //Shifting routers to barrel and using single router import
 // app.use(usersRouter); 
@@ -43,6 +56,13 @@ app.get("/",
     next();
 },
 (request, response) => {
+    console.log(request.session);
+    console.log(request.session.id);
+
+    //to remove the multiple session generation
+    request.session.visited = true;
+
+    response.cookie("hello", "world", {maxAge: 60000});
     response.status(200).send({msg: "hello world"});
 });
 
@@ -74,3 +94,35 @@ app.get("/",
 //     ]);
 // });
 
+app.post('/api/auth', (request, response) => {
+    const { body: {username, password} } = request;
+    const findUser = mockUsers.find((user) => user.username == username);
+    if(!findUser || findUser.password !== password) return response.status(401).send({ msg: "bad credentials"});
+
+    request.session.user = findUser;
+    return response.status(200).send(findUser);
+})
+
+app.get('/api/auth/status', (request,response) => {
+    return request.session.user? response.status(200).send(request.session.user) : response.status(401).send({msg: "Not Authenticated"});
+});
+
+app.post('/api/cart', (request, response) => {
+    if(!request.session.user) return response.sendStatus(401);
+    const { body: item} = request;
+
+    const { cart } = request.session;
+
+    if(cart) {
+        cart.push(item);
+    }else {
+        request.session.cart = [item];
+    }
+    return response.status(201).send(item);
+});
+
+app.get('/api/cart', (request, response) => {
+    if(!request.session.user) return response.sendStatus(401);
+    
+    return response.send(request.session.cart?? []);
+});
