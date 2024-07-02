@@ -4,9 +4,14 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { mockUsers } from './utils/constants.js';
 import passport from 'passport';
-import './strategies/local-strategy.js'
+import './strategies/local-strategy.js';
+import mongoose from 'mongoose';
 
 const app = express();
+
+mongoose.connect('mongodb://localhost/express_course')
+.then(() => console.log("connected to db"))
+.catch((err) => console.log(`Error: ${err}`));
 
 //registering the middleware to handle parse json 
 app.use(express.json());

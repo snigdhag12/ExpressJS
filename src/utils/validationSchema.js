@@ -18,5 +18,8 @@ export const createUserValidationSchema = {
         notEmpty: {
             errorMessage: "Username cannot be empty",
         },
-    }
-}
+    },
+    password: {
+        notEmpty: true,
+    },
+};

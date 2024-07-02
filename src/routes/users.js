@@ -3,6 +3,8 @@ import { query, validationResult, body, matchedData, checkSchema } from 'express
 import { createUserValidationSchema } from '../utils/validationSchema.js'
 import { mockUsers } from '../utils/constants.js'
 import {resolveUserByID, validateUser} from '../utils/middlewares.js'
+import { User } from '../mongoose/schemas/user.js'
+import { hashPassword } from '../utils/helpers.js'
 
 const router = Router();
 
@@ -35,11 +37,13 @@ router.get('/api/users',  query('filter').isString().isLength({min: 3, max: 10})
 });
 //POST REQUEST to create user
 router.post('/api/users', checkSchema(createUserValidationSchema),
-(request, response) => {
+async (request, response) => {
 
     // if(!validateUser(request.body)) {
     //     return response.status(400).send({ msg: 'Invalid request body. Username and displayName are required and should be strings.' });
     // }
+
+    //Previously storing info in Array Mock user, now shifted to DB
     const result = validationResult(request);
     console.log(result);
     if(!result.isEmpty()){
@@ -47,9 +51,20 @@ router.post('/api/users', checkSchema(createUserValidationSchema),
     }
     const data = matchedData(request);
     console.log(data);//validated fields
-    const newUser = { id: mockUsers[mockUsers.length-1] + 1, ...data};
-    mockUsers.push(newUser);
-    return response.status(201).send(newUser);
+    // const newUser = { id: mockUsers[mockUsers.length-1] + 1, ...data};
+    // mockUsers.push(newUser);
+    // return response.status(201).send(newUser);
+
+    //const { body } = request;
+    data.password = hashPassword(data.password);
+    const newUser = new User(data);
+    try{
+        const savedUser = await newUser.save();
+        return response.status(201).send(savedUser);
+    }catch(err){
+        console.log(err);
+        return response.sendStatus(400);
+    }
 });
 
 //route parameters
