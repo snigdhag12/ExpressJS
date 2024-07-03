@@ -4,10 +4,10 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { mockUsers } from './utils/constants.js';
 import passport from 'passport';
-import './strategies/local-strategy.js';
+//import './strategies/local-strategy.js';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
-
+import './strategies/discord-strategy.js';
 const app = express();
 
 mongoose.connect('mongodb://localhost/express_course')
@@ -159,3 +159,11 @@ app.get('/api/cart', (request, response) => {
     
     return response.send(request.session.cart?? []);
 });
+
+app.get('/api/auth/discord', passport.authenticate("discord"));
+
+app.get('/api/auth/discord/redirect', passport.authenticate("discord"),
+(request, response) => {
+    return response.sendStatus(200);
+}
+);
