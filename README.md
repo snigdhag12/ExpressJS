@@ -51,7 +51,7 @@ npm install express
 npm install -D nodemon
 ```
 
-**The -D flag (or --save-dev) adds nodemon to devDependencies, which are used only in development environments. This ensures that your production package is not inflated with unnecessary dependencies**
+**The -D flag (or --save-dev) adds nodemon to devDependencies, which are used only in development environments. This ensures that your production package is not inflated with unnecessary dependencies.**
 
 ### Scripts in `package.json`
 Scripts in package.json automate tasks in your development workflow. Run scripts using `npm run <script-name>`. Example `npm run test`.
@@ -137,23 +137,22 @@ router.get('/api/users', (request, response) => {
 Middleware is a request handler that allows you to intercept and manipulate requests and responses before they reach route handlers. For example, `app.use(express.json())` registers a middleware with your express app which ensures that incoming requests with JSON payloads are parsed and made available as req.body objects in subsequent route handlers.
 The order of registering middleware matters for its proper execution.
 
-**More to explore: ...body -> Did you notice spreader operator in tutorial? Read more on how it works internally?**
+**More to explore: ...body -> Did you notice spread operator in tutorial? Read more on how it works internally?**
 
 
 ## Validation
 Validation is crucial for maintaining data integrity and security in production applications. To streamline validation logic and reduce code duplication, leverage schema validation libraries such as `Joi` and `express-validator` for Node.js. These libraries allow you to define validation rules centrally, ensuring consistency across your application's functions and endpoints.
 
 **More to explore: Dive deep into schema libraries and how they are utilised in production applications?**
+**More to know: If there is no explicit return statement in a function, JavaScript implicitly returns undefined by default.**
 
 ## Database Interaction 
 ### Mongoose vs. MongoDB Native Driver
 Mongoose is preferred over the MongoDB Native Driver for its ease of use and productivity enhancements. It provides a schema-based modeling approach, simplifying data validation and defining relationships between data. Mongoose also offers built-in features like middleware, schema validation, and easy querying, making it ideal for rapid development and maintaining code clarity in MongoDB applications.
 
-**More to know: If there is no explicit return statement in a function, JavaScript implicitly returns undefined by default.**
-
 ## Session Management
-- `saveUninitialized`: false prevents storing unnecessary sessions. It ensures that a session is only created when necessary data is added to it, thereby saving storage space and improving performance.
-- `resave`: false prevents updates to session data when there are no changes in the session object. This avoids unnecessary updates to the session store's timestamp, optimizing resource usage and session management efficiency.
+- `saveUninitialized: false` prevents storing unnecessary sessions. It ensures that a session is only created when necessary data is added to it, thereby saving storage space and improving performance.
+- `resave: false` prevents updates to session data when there are no changes in the session object. This avoids unnecessary updates to the session store's timestamp, optimizing resource usage and session management efficiency.
 
 ## Authentication & Authorization
 ### Passport.js Integration
@@ -163,6 +162,7 @@ Learn to integrate [Passport.js](https://www.passportjs.org/) for authentication
 OAuth2 is an authorization framework that allows third-party applications to obtain limited access to an HTTP service on behalf of a user, without exposing the user's credentials. [Learn More](https://auth0.com/intro-to-iam/what-is-oauth-2)
 
 **More to explore: How can you prevent your secrets from getting pushed to public repo by mistake? Are there any libraries or frameworks that assist in that?**
+
 There are various ways to handle this:
 - Environment Variables: Store secrets in environment variables and use libraries like `dotenv` in Node.js to manage them locally.
 - Git Ignore: Add sensitive files (e.g., .env) to .gitignore to ensure they are not tracked by Git.
@@ -178,6 +178,7 @@ Babel is used with Jest so that Jest can understand and test modern JavaScript f
 #### Difference between `test` and `spec`
 - Test: Refers to individual test cases or units of code being tested within a testing framework like Jest or Mocha.
 - Spec: Refers to the specification file where test cases and their expected behaviors are described, commonly used in frameworks like Jasmine or RSpec.
+
 Both terms are used to describe different aspects of the testing process within different testing frameworks, but their exact usage and meaning can vary slightly depending on the framework being used. It is commonly used interchangeably in industry.
 
 #### Mock Functions in Unit Testing
@@ -223,8 +224,8 @@ const mockRequest: MockRequest = {
 ```
 
 ## Project Ideas
-- User Authentication System: Implement a complete authentication system. Explore various authorization options.
-- API with Validation: Create an API that includes comprehensive validation using express-validator and other tools.
+- **User Authentication System:** Implement a exhaustive authentication system. Explore various authorization options including local auth, 3rd party apps etc.
+- **API with Validation:** Create an API that includes comprehensive validation using express-validator and other tools.
 
 ## Acknowledgements
 Special thanks to @stuyy for the excellent tutorial.
