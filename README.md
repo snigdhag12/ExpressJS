@@ -13,9 +13,8 @@ Welcome to the **Express.js Deep Dive** repository! This repository documents my
 7. [Database Interaction](#database-interaction)
 8. [Authentication & Authorization](#authentication--authorization)
 9. [Testing](#testing)
-10. [Further Exploration](#further-exploration)
-11. [Project Ideas](#project-ideas)
-12. [Acknowledgements](#acknowledgements)
+10. [Project Ideas](#project-ideas)
+11. [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -111,6 +110,8 @@ Using **'api/users'** instead of just **'users'** in your route paths is a good 
 - **Consistency:** Following this practice brings consistency to your codebase, making it easier for new developers to understand the structure of your application.
 - **Security:** By separating your API routes, you can apply different middleware and security measures to your API endpoints compared to your web routes, enhancing the security of your application.
 
+You can use Postman/Thunder Client to make API requests to your endpoint.
+
 ### Query Parameters
 Always ensure proper error handling of query params. (More structured validations were covered in later sections)
 
@@ -132,5 +133,101 @@ router.get('/api/users', (request, response) => {
 });
 ```
 
-### Middleware
-Middleware is a request handler that allows you to intercept and manipulate requests and responses before they reach route handlers. For example, `app.use(express.json())` registers a middleware with your express app which ensures 
+## Middleware
+Middleware is a request handler that allows you to intercept and manipulate requests and responses before they reach route handlers. For example, `app.use(express.json())` registers a middleware with your express app which ensures that incoming requests with JSON payloads are parsed and made available as req.body objects in subsequent route handlers.
+The order of registering middleware matters for its proper execution.
+
+**More to explore: ...body -> Did you notice spreader operator in tutorial? Read more on how it works internally?**
+
+
+## Validation
+Validation is crucial for maintaining data integrity and security in production applications. To streamline validation logic and reduce code duplication, leverage schema validation libraries such as `Joi` and `express-validator` for Node.js. These libraries allow you to define validation rules centrally, ensuring consistency across your application's functions and endpoints.
+
+**More to explore: Dive deep into schema libraries and how they are utilised in production applications?**
+
+## Database Interaction 
+### Mongoose vs. MongoDB Native Driver
+Mongoose is preferred over the MongoDB Native Driver for its ease of use and productivity enhancements. It provides a schema-based modeling approach, simplifying data validation and defining relationships between data. Mongoose also offers built-in features like middleware, schema validation, and easy querying, making it ideal for rapid development and maintaining code clarity in MongoDB applications.
+
+**More to know: If there is no explicit return statement in a function, JavaScript implicitly returns undefined by default.**
+
+## Session Management
+- `saveUninitialized`: false prevents storing unnecessary sessions. It ensures that a session is only created when necessary data is added to it, thereby saving storage space and improving performance.
+- `resave`: false prevents updates to session data when there are no changes in the session object. This avoids unnecessary updates to the session store's timestamp, optimizing resource usage and session management efficiency.
+
+## Authentication & Authorization
+### Passport.js Integration
+Learn to integrate [Passport.js](https://www.passportjs.org/) for authentication in Express.js. Passport.js provides a flexible and modular authentication middleware for Node.js applications, supporting various authentication mechanisms like OAuth, OAuth2, JWT, etc.
+
+### What is OAuth2?
+OAuth2 is an authorization framework that allows third-party applications to obtain limited access to an HTTP service on behalf of a user, without exposing the user's credentials. [Learn More](https://auth0.com/intro-to-iam/what-is-oauth-2)
+
+**More to explore: How can you prevent your secrets from getting pushed to public repo by mistake? Are there any libraries or frameworks that assist in that?**
+There are various ways to handle this:
+- Environment Variables: Store secrets in environment variables and use libraries like `dotenv` in Node.js to manage them locally.
+- Git Ignore: Add sensitive files (e.g., .env) to .gitignore to ensure they are not tracked by Git.
+- Secrets Management Tools: Utilize secrets management tools like AWS Secrets Manager, HashiCorp Vault, or Azure Key Vault for secure storage and access control.
+- Static Code Analysis: Use tools like GitGuardian or TruffleHog to scan repositories for potential exposed secrets and tokens.
+
+## Testing
+### Unit Testing with Jest
+
+#### Why Babel is used with Jest?
+Babel is used with Jest so that Jest can understand and test modern JavaScript features and ES modules. These newer features might not be supported directly by Node.js or older web browsers. Babel helps by converting these modern JavaScript codes into a format that Jest and older environments can understand, making sure our tests run smoothly and accurately across different setups.
+
+#### Difference between `test` and `spec`
+- Test: Refers to individual test cases or units of code being tested within a testing framework like Jest or Mocha.
+- Spec: Refers to the specification file where test cases and their expected behaviors are described, commonly used in frameworks like Jasmine or RSpec.
+Both terms are used to describe different aspects of the testing process within different testing frameworks, but their exact usage and meaning can vary slightly depending on the framework being used. It is commonly used interchangeably in industry.
+
+#### Mock Functions in Unit Testing
+Mock functions are simulated functions that mimic the behavior of real functions within a controlled environment, typically used for testing purposes, since it's impractical and undesirable to call actual functions directly for each test case.
+
+#### Intresting difference in request mocking between JS and TS
+```javascript
+// Empty request and response with eg test
+const mockRequest = {
+    
+};
+const mockResponse = {
+
+};
+
+it('should return 400 when errors found', async () => {
+        await createUserHandler(mockRequest, mockResponse);
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+        expect(mockResponse.send).toHaveBeenCalledWith({ errors: [{ msg: 'Invalid username' }] });
+    });
+
+```
+Passing empty mockRequest to tests works in JavaScript but will error out in Typescript.
+This is because **JavaScript is dynamically typed**. This means you can add or remove properties from objects freely at runtime without strict type checking.
+
+However, **TypeScript (TS) is statically typed**. It enforces type checking at compile time, which means every property you access on an object must conform to its type definition. If you define mockRequest and mockResponse with specific types or interfaces that include properties like cookies or headers, TypeScript expects those properties to be present when you use these objects.
+
+```typescript
+interface MockRequest {
+    method: string;
+    path: string;
+    // ? to mark properties as optional
+    cookies?: any;
+    headers?: any;
+}
+
+// Mock object in TS will error out if required parameters are missing.
+const mockRequest: MockRequest = {
+    method: 'GET',
+    path: '/api',
+    // Optional properties like cookies and headers can be omitted
+};
+```
+
+## Project Ideas
+- User Authentication System: Implement a complete authentication system. Explore various authorization options.
+- API with Validation: Create an API that includes comprehensive validation using express-validator and other tools.
+
+## Acknowledgements
+Special thanks to @stuyy for the excellent tutorial.
+[Github Link](https://github.com/stuyy/expressjs-full-course)
+
+Happy coding! 🚀
