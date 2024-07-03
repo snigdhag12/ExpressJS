@@ -6,6 +6,7 @@ import { mockUsers } from './utils/constants.js';
 import passport from 'passport';
 import './strategies/local-strategy.js';
 import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
 
 const app = express();
 
@@ -24,7 +25,10 @@ app.use(session({
     resave: false,
     cookie: {
         maxAge: 60000 * 60,
-    }
+    },
+    store: MongoStore.create({
+        client: mongoose.connection.getClient()
+    }),
 }));
 
 
